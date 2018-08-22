@@ -8,15 +8,22 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import kz.cgn.flickrclient.R
-import kz.cgn.flickrclient.domain.models.Photo
+import kz.cgn.flickrclient.domain.model.Photo
 
 class PhotoAdapter(private val photoList: MutableList<Photo>) : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
+
+    lateinit var onClickCallback: OnClickCallback
+
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         val viewHolder =  ViewHolder(LayoutInflater.from(parent.context).inflate(
                 R.layout.row_image_list,
                 parent,
                 false
         ))
+        viewHolder.imageview.setOnClickListener {
+            val position = it.getTag(R.integer.list_pos_key) as Int
+            onClickCallback.onClick(it, photoList[position])
+        }
         return viewHolder
     }
 
@@ -85,5 +92,9 @@ class PhotoAdapter(private val photoList: MutableList<Photo>) : RecyclerView.Ada
         override fun getOldListSize(): Int = oldList.size
 
         override fun getNewListSize(): Int = newList.size
+    }
+
+    interface OnClickCallback {
+        fun onClick(v: View, photo: Photo)
     }
 }

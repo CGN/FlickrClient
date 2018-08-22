@@ -1,7 +1,7 @@
 package kz.cgn.flickrclient.data.network
 
 import io.reactivex.Flowable
-import kz.cgn.flickrclient.data.network.models.PhotoListData
+import kz.cgn.flickrclient.data.network.model.PhotoListData
 import retrofit2.http.GET
 import retrofit2.http.Query
 

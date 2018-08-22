@@ -1,13 +1,13 @@
 package kz.cgn.flickrclient.data
 
 import io.reactivex.Flowable
-import kz.cgn.flickrclient.data.network.NetworkRepository
-import kz.cgn.flickrclient.data.network.models.generatePhotoUrl
+import kz.cgn.flickrclient.data.network.INetworkRepository
+import kz.cgn.flickrclient.data.network.model.generatePhotoUrl
 import kz.cgn.flickrclient.domain.Params
-import kz.cgn.flickrclient.domain.PhotoRepository
-import kz.cgn.flickrclient.domain.models.Photo
+import kz.cgn.flickrclient.domain.IPhotoRepository
+import kz.cgn.flickrclient.domain.model.Photo
 
-class DataRepository(private val networkRepository: NetworkRepository) : PhotoRepository {
+class PhotoRepositoryImpl(private val networkRepository: INetworkRepository) : IPhotoRepository {
 
     override fun getPhotos(params: Params): Flowable<List<Photo>> {
         return networkRepository.getPhotos(params)

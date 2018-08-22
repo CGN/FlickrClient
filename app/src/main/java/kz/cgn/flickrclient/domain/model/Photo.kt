@@ -1,3 +1,3 @@
-package kz.cgn.flickrclient.domain.models
+package kz.cgn.flickrclient.domain.model
 
 data class Photo(val title: String, val url: String)

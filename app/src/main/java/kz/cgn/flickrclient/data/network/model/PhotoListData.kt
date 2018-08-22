@@ -1,4 +1,4 @@
-package kz.cgn.flickrclient.data.network.models
+package kz.cgn.flickrclient.data.network.model
 
 data class PhotoListData(
         val stat: String,

@@ -1,9 +1,9 @@
 package kz.cgn.flickrclient.domain
 
 import io.reactivex.Flowable
-import kz.cgn.flickrclient.domain.models.Photo
+import kz.cgn.flickrclient.domain.model.Photo
 
-interface PhotoRepository {
+interface IPhotoRepository {
     fun getPhotos(params: Params): Flowable<List<Photo>>
 }
 

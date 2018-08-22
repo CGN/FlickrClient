@@ -5,22 +5,28 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import com.github.salomonbrys.kodein.instance
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_photo_list.*
 import kz.cgn.flickrclient.R
-import kz.cgn.flickrclient.domain.models.Photo
+import kz.cgn.flickrclient.domain.model.Photo
+import kz.cgn.flickrclient.domain.model.SearchHistory
 import kz.cgn.flickrclient.presentation.adapter.PhotoAdapter
 import kz.cgn.flickrclient.presentation.extensions.showToast
-import kz.cgn.flickrclient.presentation.presenter.MainPresenter
+import kz.cgn.flickrclient.presentation.presenter.PhotoListPresenter
 
-class MainActivity : RootActivity<MainPresenter.View>(), MainPresenter.View {
+class PhotoListActivity : RootActivity<PhotoListPresenter.View>(), PhotoListPresenter.View {
 
-    override val layoutResourceId: Int = R.layout.activity_main
+    override val layoutResourceId: Int = R.layout.activity_photo_list
 
-    override val presenter: MainPresenter by kodein.instance()
+    override val presenter: PhotoListPresenter by kodein.instance()
 
-    val photoAdapter = PhotoAdapter(mutableListOf<Photo>())
+    private val photoAdapter = PhotoAdapter(mutableListOf())
+
+    private lateinit var searchAdapter: ArrayAdapter<String>
 
     override fun initializeUI() {
         list.setHasFixedSize(true)
@@ -31,16 +37,21 @@ class MainActivity : RootActivity<MainPresenter.View>(), MainPresenter.View {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val gridLayoutManager = list.layoutManager as GridLayoutManager
-                val visibleItemCount = gridLayoutManager.childCount
                 val totalItemCount = gridLayoutManager.itemCount
                 val firstVisibleItem = gridLayoutManager.findFirstVisibleItemPosition()
 
-                if (progress.visibility == View.GONE && totalItemCount - firstVisibleItem <= 21) {
+                if (!swipe_refresh.isRefreshing && totalItemCount - firstVisibleItem <= 21) {
                     val page = totalItemCount / 21
                     presenter.load(page = page)
                 }
             }
         })
+
+        photoAdapter.onClickCallback = object : PhotoAdapter.OnClickCallback {
+            override fun onClick(v: View, photo: Photo) {
+                showTestText(photo.title)
+            }
+        }
 
         swipe_refresh.setOnRefreshListener { presenter.load() }
     }
@@ -57,11 +68,34 @@ class MainActivity : RootActivity<MainPresenter.View>(), MainPresenter.View {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                presenter.loadSearchHistory(newText?:"")
                 return false
             }
         })
 
+        val searchAutoComplete = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text) as SearchView.SearchAutoComplete
+        searchAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, listOf())
+        searchAutoComplete.setAdapter(searchAdapter)
+        searchAutoComplete.setDropDownBackgroundResource(android.R.color.holo_blue_light)
+
+        searchAutoComplete.onItemClickListener = object: AdapterView.OnItemClickListener {
+            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val queryString = searchAdapter.getItem(position)
+                searchView.setQuery(queryString, true)
+            }
+        }
+
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.app_bar_menu_clear_search_history -> {
+                presenter.clearSearchHistory()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun initializePresenter() {
@@ -89,14 +123,21 @@ class MainActivity : RootActivity<MainPresenter.View>(), MainPresenter.View {
     }
 
     override fun showProgress() {
-        progress.visibility = View.VISIBLE
         swipe_refresh.isRefreshing = true
 
     }
 
     override fun hideProgress() {
-        progress.visibility = View.GONE
         swipe_refresh.isRefreshing = false
+    }
+
+    override fun updateSearchHistory(searchHistoryList: List<SearchHistory>) {
+        searchAdapter.clear()
+        searchAdapter.addAll(searchHistoryList.map { it.tag })
+    }
+
+    override fun navigateToDetail(photo: Photo) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 

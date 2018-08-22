@@ -1,4 +1,4 @@
-package kz.cgn.flickrclient.domain.interactor
+package kz.cgn.flickrclient.domain.interactor.base
 
 import io.reactivex.Flowable
 import kz.cgn.flickrclient.domain.PostExecutionThread
