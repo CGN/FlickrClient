@@ -1,5 +1,8 @@
 package kz.cgn.flickrclient.presentation.activity
 
+import android.content.Intent
+import android.support.v4.app.ActivityCompat
+import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -10,6 +13,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.github.salomonbrys.kodein.instance
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_photo_list.*
 import kz.cgn.flickrclient.R
 import kz.cgn.flickrclient.domain.model.Photo
@@ -50,6 +54,14 @@ class PhotoListActivity : RootActivity<PhotoListPresenter.View>(), PhotoListPres
         photoAdapter.onClickCallback = object : PhotoAdapter.OnClickCallback {
             override fun onClick(v: View, photo: Photo) {
                 showTestText(photo.title)
+                val photoJson = Gson().toJson(photo)
+
+                val optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this@PhotoListActivity, v, getString(R.string.trans_list2detail))
+
+                val intent = Intent(this@PhotoListActivity, PhotoDetailActivity::class.java)
+                intent.putExtra("content", photoJson)
+//                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                ActivityCompat.startActivity(this@PhotoListActivity, intent, optionsCompat.toBundle())
             }
         }
 

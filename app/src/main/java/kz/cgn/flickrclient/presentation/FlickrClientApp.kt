@@ -20,6 +20,7 @@ import kz.cgn.flickrclient.domain.interactor.ClearSearchHistoryUserCase
 import kz.cgn.flickrclient.domain.interactor.GetPhotosByTagUseCase
 import kz.cgn.flickrclient.domain.interactor.GetSearchHistoryByPrefixUseCase
 import kz.cgn.flickrclient.domain.interactor.UpdateSearchHistoryUseCase
+import kz.cgn.flickrclient.presentation.presenter.PhotoDetailPresenter
 import kz.cgn.flickrclient.presentation.presenter.PhotoListPresenter
 
 class FlickrClientApp : Application(), KodeinAware {
@@ -28,6 +29,8 @@ class FlickrClientApp : Application(), KodeinAware {
         import(autoAndroidModule(this@FlickrClientApp))
 
         bind<PhotoListPresenter>() with provider { PhotoListPresenter(instance(), instance(), instance(), instance()) }
+
+        bind<PhotoDetailPresenter>() with provider { PhotoDetailPresenter() }
 
         bind<PostExecutionThread>() with singleton { UIThread() }
 

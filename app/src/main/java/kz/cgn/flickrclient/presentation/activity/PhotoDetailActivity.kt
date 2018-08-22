@@ -1,30 +1,45 @@
 package kz.cgn.flickrclient.presentation.activity
 
+import com.github.salomonbrys.kodein.instance
+import com.google.gson.Gson
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_photo_detail.*
+import kz.cgn.flickrclient.R
+import kz.cgn.flickrclient.domain.model.Photo
+import kz.cgn.flickrclient.presentation.extensions.showToast
 import kz.cgn.flickrclient.presentation.presenter.PhotoDetailPresenter
-import kz.cgn.flickrclient.presentation.presenter.Presenter
 
 class PhotoDetailActivity: RootActivity<PhotoDetailPresenter.View>(), PhotoDetailPresenter.View  {
 
-    override val layoutResourceId: Int
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val layoutResourceId: Int = R.layout.activity_photo_detail
 
 
-    override val presenter: Presenter<PhotoDetailPresenter.View>
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val presenter: PhotoDetailPresenter by kodein.instance()
+
 
     override fun initializeUI() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val extras = intent.extras
+        if (extras != null) {
+            val photoJson = extras.getString("content")
+            val photo = Gson().fromJson(photoJson, Photo::class.java)
+            image_detail_title.text = photo.title
+            Picasso.get()
+                    .load(photo.url)
+                    .placeholder(R.drawable.loading_default)
+                    .error(R.drawable.ic_image_broken)
+                    .into(image_detail)
+        }
     }
 
     override fun initializePresenter() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        presenter.start(this)
     }
 
     override fun showError(messageId: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showToast(messageId)
     }
 
     override fun showError(message: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showToast(message)
     }
 }
