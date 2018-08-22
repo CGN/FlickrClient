@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FlickrClient</string>
+    <string name="image">Image</string>
+    <string name="no_data">No image found...</string>
+</resources>
